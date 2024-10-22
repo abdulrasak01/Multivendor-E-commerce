@@ -1,6 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Login = () => {
+   const baseURL = 'http://localhost:8000/api'
+   const [formError,setFormError] = useState('')
+   const [errMsg,setErrMsg] = useState('')
+   const [input,setInput] = useState()
+
+    const handleInput = (e) => {
+      const { id, value } = e.target
+      setInput((prev) => {
+        return {
+          ...prev,
+          [id]: value,
+        }
+      })
+      setFormError((prevState) => ({
+        ...prevState,
+        [id]: '',
+      }))
+    }
+
+    const getValueForInput = (field) => {
+      const value =
+        input ? input[field] !== undefined ? input[field] : '' : null
+      return value
+    }
+
+    console.log(input);
+    
+
+
   return (
     <div className="container mt-4">
       <div className="row">
@@ -17,6 +46,9 @@ const Login = () => {
                     type="text"
                     className="form-control"
                     id="username"
+                    value={getValueForInput('username')}
+                    onChange={handleInput}
+                    error={formError.username}
                   />
                 </div>
                 <div className="mb-3">
@@ -26,7 +58,10 @@ const Login = () => {
                   <input
                     type="password"
                     className="form-control"
-                    id="pwd"
+                    id="password"
+                    value={getValueForInput('password')}
+                    onChange={handleInput}
+                    error={formError.password}
                   />
                 </div>
                 <button type="submit" className="btn btn-primary">

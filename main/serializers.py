@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from . import models
+from django.contrib.auth.models import User
 
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,17 +24,24 @@ class VendorDetailSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
-        fields=['id','category','vendor','title','detail','price']
+        fields=['id','category','vendor','title','slug','detail','price','product_imgs']
         
     def __init__(self, *args, **kwargs):
         super(ProductListSerializer, self).__init__(*args, **kwargs)
         self.Meta.depth = 1
         
+        
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductImage
+        fields = ['id','product','image']
+        
 class ProductDetailSerializer(serializers.ModelSerializer):
     product_ratings = serializers.StringRelatedField(many=True,read_only=True)
+    product_imgs = ProductImageSerializer(many=True, read_only = True)
     class Meta:
         model = models.Product
-        fields=['id','category','vendor','title','detail','price','product_ratings','product_imgs']
+        fields=['id','category','vendor','title','slug','tag_list','detail','price','product_ratings','product_imgs']
         
     def __init__(self, *args, **kwargs):
         super(ProductDetailSerializer, self).__init__(*args, **kwargs)
@@ -103,3 +111,8 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super(CategoryDetailSerializer, self).__init__(*args, **kwargs)
         # self.Meta.depth = 1
+        
+class UserSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = User
+        fields = ['id','username','password', 'email']

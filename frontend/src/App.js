@@ -8,6 +8,7 @@ import CategoryProducts from "./Components/CategoryProducts";
 import AllProducts from "./Components/AllProducts";
 import ProductDetail from "./Components/ProductDetail";
 import CheckOut from "./Components/CheckOut";
+import TagProducts from "./Components/TagProducts";
 
 // Customer Panel
 import Register from "./Components/Customer/Register";
@@ -45,6 +46,7 @@ function App() {
           <Route path='/products' element={<AllProducts />} />
           <Route path='/category/:category_slug/:category_id' element={<CategoryProducts />} />
           <Route path='/product/:product_slug/:product_id' element={<ProductDetail />} />
+          <Route path='/products/:tag' element={<TagProducts />} />
           <Route path='/checkout' element={<CheckOut />} />
           <Route path='/customer/order-success' element={<OrderSuccess />} />
           <Route path='/customer/order-failure' element={<OrderFailure />} />

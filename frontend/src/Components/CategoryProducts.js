@@ -10,14 +10,11 @@ const CategoryProducts = () => {
   const baseURL = 'http://localhost:8000/api'
 
   const { category_slug, category_id } = useParams();
-  console.log(category_id);
   
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data
-      console.log(res);
-      
+      const res = (await axios.get(url)).data      
       setProducts(res.results)
       setTotalResult(res.count)
     } catch (error) {
@@ -31,7 +28,6 @@ const CategoryProducts = () => {
   const changeUrl = (url) => {
     fetchData(url)
   }
-  console.log(products);
   
 
   var links = []

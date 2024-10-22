@@ -22,15 +22,24 @@ class Product(models.Model):
     category = models.ForeignKey(productCategory, on_delete=models.SET_NULL, null=True, related_name='category_products')
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=200)
+    slug = models.CharField(max_length=300, unique=True, null=True) 
     detail = models.TextField(null=True)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=10,decimal_places=2)
+    tags=models.TextField(null=True)
+    image = models.ImageField(upload_to='product_imgs/', null=True, blank=True)
     def __str__(self):
         return self.title
+    
+    def tag_list(self):
+        if(self.tags):
+            tagList=self.tags.split(',')
+            return(tagList)
+        return
     
 #customer model
 class Customer(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
-    mobile = models.PositiveBigIntegerField()
+    mobile = models.PositiveBigIntegerField(null=True)
     
     def __str__(self):
         return self.user.username
@@ -72,5 +81,5 @@ class ProductImage(models.Model):
     image = models.ImageField(upload_to='product_imgs/',null=True)
     
     def __str__(self):
-        return self.product.title
+        return self.image.url
     

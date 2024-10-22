@@ -11,9 +11,7 @@ const Categories = () => {
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data
-      console.log(res);
-      
+      const res = (await axios.get(url)).data      
       setCategories(res.data)
       setTotalResult(res.count)
     } catch (error) {

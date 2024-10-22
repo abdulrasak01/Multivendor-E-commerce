@@ -14,7 +14,7 @@ const AddProduct = () => {
             <div className="table-body">
               <form className="m-5">
               <div className="mb-3">
-                  <label for="category" className="form-label">
+                  <label htmlFor="category" className="form-label">
                     Category
                   </label>
                   <select className="form-control" id="category">

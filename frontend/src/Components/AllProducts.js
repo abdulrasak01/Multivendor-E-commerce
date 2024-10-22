@@ -9,9 +9,7 @@ const AllProducts = () => {
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data
-      console.log(res);
-      
+      const res = (await axios.get(url)).data      
       setProducts(res.results)
       setTotalResult(res.count)
     } catch (error) {
@@ -30,6 +28,9 @@ const AllProducts = () => {
   for(let i=1; i<=totalResult; i++) {
     links.push(<li className="page-item"><Link onClick={()=>changeUrl(`/products/?page=${i}`)} className="page-link" to={`/products/?page=${i}`}>{i}</Link></li>)
   }
+
+  console.log(products);
+  
   
   
 
