@@ -12,6 +12,8 @@ admin.site.register(models.OrderItems)
 admin.site.register(models.CustomerAddress)
 admin.site.register(models.ProductRating)
 
+admin.site.register(models.Student)
+admin.site.register(models.Address)
 #Product image
 
 admin.site.register(models.ProductImage)

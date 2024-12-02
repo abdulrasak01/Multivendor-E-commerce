@@ -12,7 +12,8 @@ import TagProducts from "./Components/TagProducts";
 
 // Customer Panel
 import Register from "./Components/Customer/Register";
-import Login from "./Components/Customer/Login";
+import CustomerLogin from "./Components/Customer/CustomerLogin";
+import CustomerLogout from "./Components/Customer/CustomerLogout";
 import Dashboard from "./Components/Customer/Dashboard";
 import Orders from "./Components/Customer/Orders";
 import OrderSuccess from "./Components/Customer/OrderSuccess";
@@ -51,7 +52,8 @@ function App() {
           <Route path='/customer/order-success' element={<OrderSuccess />} />
           <Route path='/customer/order-failure' element={<OrderFailure />} />
           <Route path='/customer/register' element={<Register />} />
-          <Route path='/customer/login' element={<Login />} />
+          <Route path='/customer/login' element={<CustomerLogin />} />
+          <Route path='/customer/logout' element={<CustomerLogout />} />
           <Route path='/customer/change-password' element={<ChangePassword />} />  {/* Redirect to login page after logout */}
           <Route path='/customer/dashboard' element={<Dashboard />} />
           <Route path='/customer/update-profile' element={<UpdateProfile />} /> 
