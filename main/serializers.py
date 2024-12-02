@@ -41,7 +41,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     product_imgs = ProductImageSerializer(many=True, read_only = True)
     class Meta:
         model = models.Product
-        fields=['id','category','vendor','title','slug','tag_list','detail','price','product_ratings','product_imgs']
+        fields=['id','category','vendor','title','slug','tag_list','detail','price','product_ratings','product_imgs','demo']
         
     def __init__(self, *args, **kwargs):
         super(ProductDetailSerializer, self).__init__(*args, **kwargs)
@@ -113,6 +113,25 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         # self.Meta.depth = 1
         
 class UserSerializer(serializers.ModelSerializer):
+    mobile = serializers.CharField(max_length=15, required=False)
     class Meta(object):
         model = User
-        fields = ['id','username','password', 'email']
+        fields = ['id','username','password','email','mobile']
+        
+        
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Address
+        fields = ['address','door']
+        
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Student
+        fields = ['id','name']
+        
+    def __init__(self, *args, **kwargs):
+        super(StudentSerializer, self).__init__(*args, **kwargs)
+        self.Meta.depth = 1
+        
+        
+        

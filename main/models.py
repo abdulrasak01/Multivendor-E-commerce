@@ -26,7 +26,8 @@ class Product(models.Model):
     detail = models.TextField(null=True)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     tags=models.TextField(null=True)
-    image = models.ImageField(upload_to='product_imgs/', null=True, blank=True)
+    image = models.ImageField(upload_to='product_img]s/', null=True, blank=True)
+    demo = models.URLField(blank=True, null=True)
     def __str__(self):
         return self.title
     
@@ -82,4 +83,23 @@ class ProductImage(models.Model):
     
     def __str__(self):
         return self.image.url
+    
+class CustomUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    mobile = models.CharField(max_length=10, null=True)
+    
+    
+    
+class Student(models.Model):
+    name = models.CharField(max_length=20, null= True)
+    
+    def __str__(self):
+        return self.name
+class Address(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
+    door = models.IntegerField(null= True)
+    address = models.CharField(max_length=100, null=True)
+    
+    def __str__(self):
+        return self.door
     

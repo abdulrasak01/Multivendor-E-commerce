@@ -1,8 +1,9 @@
+import axios from "axios";
 import React, { useState } from "react";
 
-const Login = () => {
-   const baseURL = 'http://localhost:8000/api'
-   const [formError,setFormError] = useState('')
+const CustomerLogin = () => {
+   const baseURL = 'http://localhost:8000/api/'
+   const [formError,setFormError] = useState(false)
    const [errMsg,setErrMsg] = useState('')
    const [input,setInput] = useState()
 
@@ -25,6 +26,30 @@ const Login = () => {
         input ? input[field] !== undefined ? input[field] : '' : null
       return value
     }
+
+    const handleSubmit = async (e) => {
+      try {
+        const res = await axios.post(baseURL+'customer/login/',input)
+        console.log(res);
+        if(res.data.bool === false){
+          setFormError(true)
+          setErrMsg(res.data.msg)
+        }
+        else{
+          localStorage.setItem('customer_login',true)
+          localStorage.setItem('customer_username',res.data.user)
+          setFormError(false)
+          setErrMsg('')
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+  const checkCustomer = localStorage.getItem('customer_login')
+  if(checkCustomer){
+    window.location.href='/customer/dashboard'
+  }
 
     console.log(input);
     
@@ -64,9 +89,10 @@ const Login = () => {
                     error={formError.password}
                   />
                 </div>
-                <button type="submit" className="btn btn-primary">
+                <button type="button" onClick={handleSubmit} className="btn btn-primary">
                   Submit
                 </button>
+                {errMsg && <p className="text-danger">{errMsg}</p>}
               </form>
             </div>
           </div>
@@ -76,4 +102,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default CustomerLogin;
