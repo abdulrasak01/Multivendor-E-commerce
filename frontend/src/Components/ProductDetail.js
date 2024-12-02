@@ -36,6 +36,9 @@ const ProductDetail = () => {
     }
   };
 
+
+  console.log(product);
+  
   useEffect(()=>{
     fetchData(baseURL+`/product/${product_id}/`)
     fetchRelatedData(baseURL+`/related-products/${product_id}/`)
@@ -72,10 +75,10 @@ const ProductDetail = () => {
             Price: <span className="text-muted">Rs. {product.price}</span>
           </h5>
           <p>
-            <Link title="Demo" target="blank" className="btn btn-dark ms-1">
+            <a title="Demo" href={product.demo} target="blank" className="btn btn-dark ms-1">
               {" "}
               Demo <i className="fa-solid fa-cart-shopping"></i>
-            </Link>
+            </a>
             <button title="Add to cart" className="btn btn-success ms-1">
               {" "}
               Add to cart <i className="fa-solid fa-cart-shopping"></i>

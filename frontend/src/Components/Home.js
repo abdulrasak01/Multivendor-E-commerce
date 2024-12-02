@@ -5,6 +5,7 @@ import AllProducts from './AllProducts';
 import { Link } from 'react-router-dom';
 import SingleProduct from './SingleProduct';
 const Home = () => {
+
   return (
     <main className="container mt-4">
     <div className="latest-products">
