@@ -32,7 +32,7 @@ const Header = () => {
                 <Dropdown.Item><Link to='/customer/login'>Login </Link></Dropdown.Item>
                 <Dropdown.Item><Link to='/customer/register'> Register </Link></Dropdown.Item>
                 <Dropdown.Item><Link to='/customer/dashboard'>Dashboard</Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/customer/login'>Logout</Link></Dropdown.Item>
+                <Dropdown.Item><Link to='/customer/logout'>Logout</Link></Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </li>
