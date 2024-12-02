@@ -20,6 +20,7 @@ const CustomerLogin = () => {
         [id]: '',
       }))
     }
+    
 
     const getValueForInput = (field) => {
       const value =
