@@ -1,8 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Dropdown from 'react-bootstrap/Dropdown';
+import Dropdown from "react-bootstrap/Dropdown";
+import { UserContext } from "../Context";
+import { useContext } from "react";
+import { CartContext } from "../Context";
 
 const Header = () => {
+  const userContext = useContext(UserContext);
+  const {cartData,setCartData} = useContext(CartContext);
+
   return (
     <nav className="navbar navbar-expand-lg bg-success navbar-dark justify-between px-5 py-3">
       <div className="container-fluid w-auto">
@@ -22,30 +28,54 @@ const Header = () => {
               Categories
             </Link>
           </li>
-          <li  className="text-decoration-none">
+          <li className="text-decoration-none">
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
                 My Account
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item><Link to='/customer/login'>Login </Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/customer/register'> Register </Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/customer/dashboard'>Dashboard</Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/customer/logout'>Logout</Link></Dropdown.Item>
+              {userContext == "true" && (
+                  <>
+                    <Dropdown.Item>
+                      <Link to="/customer/dashboard">Dashboard</Link>
+                    </Dropdown.Item>
+                    <Dropdown.Item>
+                      <Link to="/customer/logout">Logout</Link>
+                    </Dropdown.Item>
+                  </>
+                )}
+                {userContext != "true" && (
+                  <>
+                    <Dropdown.Item>
+                      <Link to="/customer/login">Login </Link>
+                    </Dropdown.Item>
+                    <Dropdown.Item>
+                      <Link to="/customer/register"> Register </Link>
+                    </Dropdown.Item>
+                  </>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           </li>
-          <li  className="text-decoration-none">
+          <li className="text-decoration-none">
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
                 Seller Panel
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item><Link to='/seller/login'>Login </Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/seller/register'> Register </Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/seller/dashboard'>Dashboard</Link></Dropdown.Item>
-                <Dropdown.Item><Link to='/seller/login'>Logout</Link></Dropdown.Item>
+                <Dropdown.Item>
+                  <Link to="/seller/login">Login </Link>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Link to="/seller/register"> Register </Link>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Link to="/seller/dashboard">Dashboard</Link>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Link to="/seller/login">Logout</Link>
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </li>
@@ -56,7 +86,7 @@ const Header = () => {
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="/checkout">
-              My Cart {4}
+              My Cart ({cartData?.length? cartData.length : 0})
             </Link>
           </li>
         </ul>
