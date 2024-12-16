@@ -28,6 +28,9 @@ const CategoryProducts = () => {
   const changeUrl = (url) => {
     fetchData(url)
   }
+
+  console.log(products);
+  
   
 
   var links = []
@@ -45,7 +48,7 @@ const CategoryProducts = () => {
         </h3>
         <div className="row mb-4">
             {products?.map((product) => (
-            <SingleProduct key={product.id} title={product.title}  image={product.image} price={product.price} />
+            <SingleProduct product ={product} key={product.id}/>
           ))}
         </div>
         <nav aria-label="Page navigation">

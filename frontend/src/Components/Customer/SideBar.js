@@ -41,7 +41,7 @@ const SideBar = () => {
         Addresses
       </Link>
       <Link
-        to="/customer/login"
+        to="/customer/logout"
         className="list-group-item list-group-item-action text-danger"
       >
         Logout

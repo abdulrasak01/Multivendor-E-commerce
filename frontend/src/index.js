@@ -3,11 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {UserContext} from './Context';
+import {BrowserRouter as Router } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const userLogIn = localStorage.getItem('customer_login');
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <UserContext.Provider value={userLogIn}>
+        <App />
+      </UserContext.Provider>
+    </Router>
   </React.StrictMode>
 );
 
