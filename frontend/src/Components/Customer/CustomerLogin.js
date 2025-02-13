@@ -28,6 +28,7 @@ const CustomerLogin = () => {
     }
 
     const handleSubmit = async (e) => {
+      e.preventDefault()
       try {
         const res = await axios.post(baseURL+'customer/login/',input)
         console.log(res);
@@ -37,6 +38,7 @@ const CustomerLogin = () => {
         }
         else{
           localStorage.setItem('customer_login',true)
+          localStorage.setItem('customer_id',res.data.id)
           localStorage.setItem('customer_username',res.data.user)
           setFormError(false)
           setErrMsg('')

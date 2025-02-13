@@ -19,7 +19,7 @@ class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.VendorDetailSerializer
     
 class ProductList(generics.ListCreateAPIView):
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.all().order_by('id')
     serializer_class = serializers.ProductListSerializer
     pagination_class = pagination.PageNumberPagination
     
@@ -71,6 +71,10 @@ class OrderList(generics.ListCreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
     
+class OrderItemList(generics.ListCreateAPIView):
+    queryset = models.OrderItems.objects.all()
+    serializer_class = serializers.OrderItemsSerializer
+    
 class OrderDetail(generics.ListAPIView):
     serializer_class = serializers.OrderDetailSerializer
     
@@ -111,7 +115,7 @@ def customer_login(request):
         try:
             data = json.loads(request.body)
             username = data.get('username')
-            password = data.get('password')  
+            password = data.get('password') 
 
             # Ensure the username and password are not None or empty
             if not username or not password:
@@ -120,9 +124,13 @@ def customer_login(request):
             user = authenticate(username=username, password=password)
 
             if user is not None:
+                print("user------------->",user)
+                customer = models.Customer.objects.get(user=user)
+                print("customer------------->",customer)
                 return JsonResponse({
                     'bool': True,
-                    'user': user.username
+                    'user': user.username,
+                    'id': customer.id
                 })
             else:
                 return JsonResponse({

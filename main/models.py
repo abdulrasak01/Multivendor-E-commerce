@@ -47,12 +47,19 @@ class Customer(models.Model):
     
 #order model
 class  Order(models.Model):
-    customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='order_items')
     order_time = models.DateTimeField(auto_now_add=True)
+    order_status = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return '%s' % self.order_time
+    
    
-class  OrderItems(models.Model):
+class OrderItems(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='order_items')
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    qty = models.IntegerField(default=1)
+    price = models.DecimalField(max_digits=20, decimal_places=2,default=0)
     
     def __str__(self):
         return self.product.title

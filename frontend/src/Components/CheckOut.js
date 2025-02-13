@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
-import logo from "../logo.svg";
 import { Link } from "react-router-dom";
 import { CartContext } from "../Context";
+import { useNavigate } from "react-router-dom";
 const CheckOut = (props) => {
   const { cartData, setCartData } = useContext(CartContext);
   const [cartButtonClickStatus, setCartButtonClickStatus] = useState(false);
+  const navigate = useNavigate();
 
   const cartRemoveButtonHandler = (id) => {
     let previousCart = localStorage.getItem("cartData");
@@ -12,9 +13,7 @@ const CheckOut = (props) => {
     if (!Array.isArray(previousCart)) {
       previousCart = [];
     }
-    const updatedCart = previousCart.filter(
-      (item) => item.product.id !== id
-    );
+    const updatedCart = previousCart.filter((item) => item.product.id !== id);
     let cartString = JSON.stringify(updatedCart);
     localStorage.setItem("cartData", cartString);
     setCartButtonClickStatus(false);
@@ -22,15 +21,21 @@ const CheckOut = (props) => {
   };
 
   var sum = 0;
-  cartData.map((data)=>{
-   sum  += parseFloat(data.product.price)
-  })
+  cartData?.map((data) => {
+    sum += parseFloat(data.product.price);
+  });
 
+  const navigator = (e) =>{
+    e.preventDefault();
+    navigate(`/confirm-order`);
+  }
 
   return (
     <div className="container mt-4">
-      <h3 className="mb-4 ">All Items ({cartData.length? cartData.length : 0})</h3>
-      {cartData.length > 0 && (
+      <h3 className="mb-4 ">
+        All Items ({cartData?.length ? cartData?.length : 0})
+      </h3>
+      {cartData?.length > 0 && (
         <div className="row">
           <div className="col-md-8 col-12">
             <div className="table-responsive">
@@ -52,28 +57,30 @@ const CheckOut = (props) => {
                           <Link>
                             {" "}
                             <img
-                              src={item.product.image}
+                              src={item?.product?.image}
                               className="img-thumbnail"
                               width={80}
                             />
                           </Link>
                           <Link>
-                            <p>{item.product.title}</p>
+                            <p>{item?.product?.title}</p>
                           </Link>
                         </td>
-                        <td>Rs. {item.product.price}</td>
+                        <td>Rs. {item?.product?.price}</td>
                         <td>
                           {" "}
-                            <button
-                              type="button"
-                              onClick={()=>cartRemoveButtonHandler(item.product.id)}
-                              title="Add to cart"
-                              className="btn btn-warning ms-1"
-                            >
-                              {" "}
-                              Remove from cart{" "}
-                              <i className="fa-solid fa-cart-shopping"></i>
-                            </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              cartRemoveButtonHandler(item?.product?.id)
+                            }
+                            title="Add to cart"
+                            className="btn btn-warning ms-1"
+                          >
+                            {" "}
+                            Remove from cart{" "}
+                            <i className="fa-solid fa-cart-shopping"></i>
+                          </button>
                         </td>
                       </tr>
                     );
@@ -90,8 +97,11 @@ const CheckOut = (props) => {
                         {" "}
                         Continue Shopping
                       </Link>
-                      <Link to="" className="btn btn-success">
-                        Proceed to Payment
+                      <Link
+                        className="btn btn-success"
+                        onClick={(e) => navigator(e)}
+                      >
+                        Proceed
                       </Link>
                     </td>
                   </tr>
@@ -101,7 +111,7 @@ const CheckOut = (props) => {
           </div>
         </div>
       )}
-      {!cartData.length && (
+      {!cartData?.length && (
         <div>
           <h1>Nothing in the Cart</h1>
           <Link to="/categories" className="btn btn-secondary me-2">

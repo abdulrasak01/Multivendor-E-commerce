@@ -30,9 +30,6 @@ const AllProducts = () => {
   }
 
   console.log(products);
-  
-  
-  
 
   return (
     <>

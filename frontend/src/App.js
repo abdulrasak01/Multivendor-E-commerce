@@ -37,6 +37,7 @@ import VendorProfile from "./Components/Seller/VendorProfile";
 import VendorChangePassword from "./Components/Seller/VendorChangePassword";
 import { CartContext } from "./Context";
 import { useState } from "react";
+import ConfirmOrder from "./Components/ConfirmOrder";
 
 const checkCart = localStorage.getItem("cartData");
 function App() {
@@ -60,6 +61,7 @@ function App() {
           />
           <Route path="/products/:tag" element={<TagProducts />} />
           <Route path="/checkout" element={<CheckOut />} />
+          <Route path="/confirm-order" element={<ConfirmOrder/>} />
           <Route path="/customer/order-success" element={<OrderSuccess />} />
           <Route path="/customer/order-failure" element={<OrderFailure />} />
           <Route path="/customer/register" element={<Register />} />

@@ -72,7 +72,7 @@ const ProductDetail = () => {
         id: product.id,
         title: product.title,
         price: product.price,
-        image: productImgs[0].image,  // Assuming the first product image is the main image for simplicity
+        image: productImgs[0]?.image || null,  // Assuming the first product image is the main image for simplicity
       },
       user: {
         id: "1",  // Assuming the user ID is always "1"
