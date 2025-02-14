@@ -23,6 +23,9 @@ urlpatterns = [
     path('order-items/',views.OrderItemList.as_view()),
     path('customer/login/',views.customer_login,name='customer_login'),
     path('customer/register/',views.customer_register,name='customer_register'),
+    path('customer/update-password/',views.update_password,name='update_password'),
+    path('customer/forgot-password/',views.forgot_password,name='forgot_password'),
+    path('reset-password/<str:uidb64>/<str:token>/', views.reset_password, name='reset_password'),
 ]
 
 urlpatterns+=router.urls

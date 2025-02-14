@@ -41,6 +41,20 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+]
+
+FRONTEND_URL = 'http://localhost:3000'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'abdulrasaktestemail@gmail.com'  # Your Gmail account
+EMAIL_HOST_PASSWORD = 'ckzo vkna rgek iins'  # Your Gmail password or app-specific password
+
+
 
 INSTALLED_APPS = [
     'rest_framework',
@@ -67,6 +81,22 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 ]
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
 
 ROOT_URLCONF = 'backend.urls'
 

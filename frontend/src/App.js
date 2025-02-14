@@ -38,11 +38,12 @@ import VendorChangePassword from "./Components/Seller/VendorChangePassword";
 import { CartContext } from "./Context";
 import { useState } from "react";
 import ConfirmOrder from "./Components/ConfirmOrder";
+import ResetPassword from "./Components/Customer/ResetPassword";
 
 const checkCart = localStorage.getItem("cartData");
 function App() {
   const [cartData, setCartData] = useState(JSON.parse(checkCart));
-  
+
   return (
     <div className="">
       <CartContext.Provider value={{ cartData, setCartData }}>
@@ -61,7 +62,7 @@ function App() {
           />
           <Route path="/products/:tag" element={<TagProducts />} />
           <Route path="/checkout" element={<CheckOut />} />
-          <Route path="/confirm-order" element={<ConfirmOrder/>} />
+          <Route path="/confirm-order" element={<ConfirmOrder />} />
           <Route path="/customer/order-success" element={<OrderSuccess />} />
           <Route path="/customer/order-failure" element={<OrderFailure />} />
           <Route path="/customer/register" element={<Register />} />
@@ -89,6 +90,10 @@ function App() {
           <Route path="/seller/reports" element={<Reports />} />
           <Route path="/seller/profile" element={<VendorProfile />} />
           <Route path="/seller/password" element={<VendorChangePassword />} />
+          <Route
+            path="/reset-password/:uid/:token"
+            element={<ResetPassword />}
+          />
         </Routes>
         <Footer />
       </CartContext.Provider>

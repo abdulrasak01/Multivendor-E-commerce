@@ -10,6 +10,18 @@ const ConfirmOrder = () => {
   const baseURL = "http://localhost:8000/api";
   const [orderId, setOrderId] = useState("");
   const [payMethod, setPayMethod] = useState("");
+  const [totalAmountInINR, setTotalAmountInINR] = useState(0);
+  const [totalAmountInUSD, setTotalAmountInUSD] = useState(0);
+
+  const exchangeRate = 80;
+
+  useEffect(() => {
+    if (cartData && cartData.length > 0) {
+      const totalInRupees = cartData.reduce((acc, cart) => acc + (cart.product.price * 1), 0);
+      setTotalAmountInINR(totalInRupees);
+      setTotalAmountInUSD((totalInRupees / exchangeRate).toFixed(2));
+    }
+  }, [cartData]);
 
   const addOrderInTable = async () => {
     const customerId = localStorage.getItem("customer_id");
@@ -87,6 +99,9 @@ const updateOrderStatus = (orderStatus) =>{
       console.error(error);      
     })
 }
+
+console.log(totalAmountInUSD);
+
   
 
   return (
@@ -98,6 +113,9 @@ const updateOrderStatus = (orderStatus) =>{
             been confirmed{" "}
           </h3>
           <h5 className="'text-center  mx-auto"> ORDER ID: {orderId}</h5>
+          <h5 className="text-center mx-auto">
+            Total Amount: ₹{totalAmountInINR} (Approx. ${totalAmountInUSD})
+          </h5>
         </div>
         <div className="card p-3 mt-4">
           <form>
@@ -147,7 +165,7 @@ const updateOrderStatus = (orderStatus) =>{
                       {
                         amount: {
                           currency_code: "USD",
-                          value: 300
+                          value: totalAmountInUSD,
                         },
                       },
                     ],
