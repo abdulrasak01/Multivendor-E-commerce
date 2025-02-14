@@ -70,11 +70,19 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+
+# Enable WhiteNoise compression
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -139,6 +147,8 @@ import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(default=os.getenv('postgresql://${{postgres}}:${{UCnYqVyPiuKZyspxrCnRnpCxkfsvqAXI}}@${{postgres.railway.internal}}:5432/${{railway}}'))
 }
+
+ALLOWED_HOSTS = ["*"]
 
 
 # Password validation
