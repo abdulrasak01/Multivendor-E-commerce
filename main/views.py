@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth import authenticate
 import json
+from rest_framework.decorators import api_view
 
 from . import models
 from . import serializers
@@ -17,6 +18,14 @@ from django.db import IntegrityError
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
+
+from rest_framework.decorators import action
+from rest_framework import status
+from rest_framework.response import Response
+from django.db import transaction
+from django.shortcuts import get_object_or_404
+
+
 
 
 class VendorList(generics.ListCreateAPIView):
@@ -91,6 +100,16 @@ class OrderList(generics.ListCreateAPIView):
 class OrderItemList(generics.ListCreateAPIView):
     queryset = models.OrderItems.objects.all()
     serializer_class = serializers.OrderItemsSerializer
+    
+
+class CustomerOrderItemsList(generics.ListCreateAPIView):
+    serializer_class = serializers.CustomerOrderItemsListSerializer  
+
+    def get_queryset(self):
+        customer_id = self.kwargs['pk']
+        return models.OrderItems.objects.filter(order__customer__id=customer_id)
+
+
 
 
 class OrderDetail(generics.ListAPIView):
@@ -103,9 +122,101 @@ class OrderDetail(generics.ListAPIView):
         return order_items
 
 
-class CustomerAddressViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.CustomerAddressSerializer
-    queryset = models.CustomerAddress.objects.all()
+
+# @api_view(['GET'])
+# def get_addresses_for_customer(request, customer_id):
+#     """
+#     Retrieve the list of addresses for a specific customer.
+#     """
+#     # Get the customer instance or return a 404 error if not found
+#     customer = get_object_or_404(models.Customer, id=customer_id)
+    
+#     # Filter the addresses for the given customer
+#     addresses = models.CustomerAddress.objects.filter(customer=customer)
+    
+#     # Serialize the address data
+#     serializer = serializers.CustomerAddressSerializer(addresses, many=True)
+    
+#     return Response(serializer.data)
+
+@api_view(['GET'])
+def customer_address_list(request, customer_id):
+    """
+    List the addresses for a specific customer.
+    """
+    # Get the customer instance or return a 404 error if not found
+    customer = get_object_or_404(models.Customer, id=customer_id)
+
+    # Filter the queryset based on customer_id
+    addresses = models.CustomerAddress.objects.filter(customer=customer).order_by('-default_address')
+    
+    # Serialize the address data
+    serializer = serializers.CustomerAddressSerializer(addresses, many=True)
+    
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def create_customer_address(request, customer_id):
+    """
+    Create a new address for a specific customer, with an option to set it as the default address.
+    """
+    # Ensure the customer exists
+    customer = get_object_or_404(models.Customer, id=customer_id)
+
+    # Check if the request data contains the default_address flag
+    default_address = request.data.get('default_address', False)
+
+    # The serializer will validate and create the CustomerAddress object
+    serializer = serializers.CustomerAddressSerializer(data=request.data)
+
+    if serializer.is_valid():
+        # If it's the default address, ensure only one address per customer can be marked as default
+        if default_address:
+            # Set all other addresses to non-default for this customer
+            models.CustomerAddress.objects.filter(customer=customer).update(default_address=False)
+
+        # Save the new address and associate it with the customer
+        address = serializer.save(customer=customer, default_address=default_address)
+        
+        # Respond with the created address data (serialized)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        # Return validation errors if the data is not valid
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PATCH'])
+def set_default_address(request, address_id):
+    """
+    Set the specified address as the default address for the customer.
+    """
+    customer_id = request.data.get('customer')
+    if not customer_id:
+        return Response({"error": "Customer ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Get the customer and the address
+    customer = get_object_or_404(models.Customer, id=customer_id)
+    address = get_object_or_404(models.CustomerAddress, id=address_id, customer=customer)
+
+    # Start a database transaction to ensure data consistency
+    try:
+        # Update all other addresses for this customer to have default_address = False
+        models.CustomerAddress.objects.filter(customer=customer).update(default_address=False)
+
+        # Set the selected address as the default
+        address.default_address = True
+        address.save()
+
+        # Serialize the updated address
+        serializer = serializers.CustomerAddressSerializer(address)
+
+        # Return the updated address information
+        return Response({
+            "message": "Address successfully set as default.",
+            "address": serializer.data  # Use the serialized data here
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ProductRatingViewSet(viewsets.ModelViewSet):
@@ -122,6 +233,43 @@ class CategoryList(generics.ListCreateAPIView):
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.productCategory.objects.all()
     serializer_class = serializers.CategoryDetailSerializer
+    
+@csrf_exempt
+def update_order_status(request,order_id):
+    if request.method == 'POST':
+        updateRes = models.Order.objects.filter(id=order_id).update(order_status=True)
+        msg={
+            'bool': False,
+        }
+        if updateRes:
+            msg={
+                'bool' : True
+            }
+    return JsonResponse(msg)
+
+
+@csrf_exempt
+def update_product_download_count(request, product_id):
+    if request.method == 'POST':
+        try:
+            # Retrieve the product using product_id
+            product = models.Product.objects.get(id=product_id)
+            
+            # Increment download count
+            product.downloads += 1
+            
+            # Save the updated product
+            product.save()
+
+            # Return success response
+            return JsonResponse({'bool': True})
+        except models.Product.DoesNotExist:
+            # If the product doesn't exist, return an error response
+            return JsonResponse({'bool': False, 'error': f'Product with ID {product_id} not found'})
+    else:
+        # Return error if the method is not POST
+        return JsonResponse({'bool': False, 'error': 'Invalid request method'})
+
 
 
 @csrf_exempt
@@ -327,4 +475,107 @@ def reset_password(request, uidb64, token):
         except Exception as e:
             print(f"Error during password reset: {e}")
             return JsonResponse({'bool': False, 'msg': str(e)})
+        
+from django.http import JsonResponse
+from . import models
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def check_in_wishlist(request):
+    if request.method == 'POST':
+        # Get product_id and customer_id from the request data
+        data = json.loads(request.body)
+        product_id = data.get('product_id')  # Ensure the key matches the request payload
+        customer_id = data.get('customer')  # Ensure the key matches the request payload
+        
+        # Check if product_id and customer_id are provided
+        if not product_id or not customer_id:
+            return JsonResponse({'bool': False, 'msg': 'Product ID and Customer ID are required.'}, status=400)
+
+        # Check if the product exists in the customer's wishlist
+        check_wishlist = models.WishList.objects.filter(Product_id=product_id, Customer_id=customer_id).exists()
+        
+        # Return a response based on the existence of the wishlist item
+        if check_wishlist:
+            return JsonResponse({'bool': True})
+        return JsonResponse({'bool': False})
+    
+    
+@csrf_exempt
+def add_to_wishlist(request):
+    if request.method == 'POST':
+        # Get the product_id and customer_id from the request body
+        data = json.loads(request.body)
+        product_id = data.get('product_id')  # Ensure the key matches the request payload
+        customer_id = data.get('customer')  # Ensure the key matches the request payload
+        
+        # Check if product_id and customer_id are provided
+        if not product_id or not customer_id:
+            return JsonResponse({'bool': False, 'msg': 'Product ID and Customer ID are required.'}, status=400)
+        
+        # Check if the product already exists in the wishlist for the customer
+        existing_wishlist_item = models.WishList.objects.filter(Product_id=product_id, Customer_id=customer_id)
+        
+        if existing_wishlist_item.exists():
+            return JsonResponse({'bool': False, 'msg': 'Product already in wishlist.'})
+
+        # Add the product to the wishlist
+        try:
+            wishlist_item = models.WishList.objects.create(Product_id=product_id, Customer_id=customer_id)
+            return JsonResponse({'bool': True, 'msg': 'Product added to wishlist successfully!'})
+        except Exception as e:
+            return JsonResponse({'bool': False, 'msg': str(e)})
+
+    return JsonResponse({'bool': False, 'msg': 'Only POST method is allowed'})
+
+
+
+@csrf_exempt
+def customer_dashboard(request, pk):
+    totalAddress = models.CustomerAddress.objects.filter(customer__user__id=pk).count()
+    totalOrders = models.Order.objects.filter(customer__user__id=pk).count()
+    totalWishList = models.WishList.objects.filter(Customer__user__id=pk).count()
+    msg = {
+        'totalAddress': totalAddress,
+        'totalOrders' : totalOrders,
+        'totalWishList': totalWishList,
+    }
+    
+    return JsonResponse(msg)
+
+@api_view(['GET'])
+def get_all_wishlist(request, pk):
+    if request.method == 'GET':
+        wishList = models.WishList.objects.filter(Customer__user__id=pk)
+        serializer = serializers.WishListSerializer(wishList, many=True, context={'request': request})  # Pass the request context
+        return Response(serializer.data)
+    
+
+@csrf_exempt
+def remove_from_wishlist(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        customer_id = data.get('customer')
+        
+        # Ensure both product_id and customer_id are provided
+        if not product_id or not customer_id:
+            return JsonResponse({'bool': False, 'msg': 'Product ID and Customer ID are required.'}, status=400)
+
+        # Check if the item exists in the wishlist
+        wishlist_item = models.WishList.objects.filter(Product_id=product_id, Customer_id=customer_id)
+
+        if not wishlist_item.exists():
+            return JsonResponse({'bool': False, 'msg': 'Item not found in wishlist.'})
+
+        # Remove the item from the wishlist
+        try:
+            wishlist_item.delete()
+            return JsonResponse({'bool': True, 'msg': 'Product removed from wishlist successfully!'})
+        except Exception as e:
+            return JsonResponse({'bool': False, 'msg': str(e)})
+
+    return JsonResponse({'bool': False, 'msg': 'Only POST method is allowed'})
+
+
 

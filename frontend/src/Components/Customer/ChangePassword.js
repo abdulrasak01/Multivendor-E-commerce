@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SlideBar from "./SideBar";
-import ForgotPassword from "./ForgotPassword";  // Import the ForgotPassword component
+import ForgotPassword from "./ForgotPassword";
+import api from "../../api/api";
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -9,14 +10,12 @@ const ChangePassword = () => {
   const [username, setUsername] = useState(""); // Assuming the username is available or entered in the form
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
-  const [showForgotPassword, setShowForgotPassword] = useState(false);  // State to control showing forgot password form
+  const [showForgotPassword, setShowForgotPassword] = useState(false); // State to control showing forgot password form
 
   const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
   const handleUsernameChange = (e) => setUsername(e.target.value);
-
-  const baseURL = 'http://localhost:8000/api'
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +30,7 @@ const ChangePassword = () => {
 
     try {
       // Sending the password change request to the API
-      const response = await fetch(`${baseURL}/customer/update-password/`, {
+      const response = await api.fetch(`/customer/update-password/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +69,9 @@ const ChangePassword = () => {
             <div className="table-body">
               <form className="m-5" onSubmit={handleSubmit}>
                 {error && <div className="alert alert-danger">{error}</div>}
-                {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                {successMessage && (
+                  <div className="alert alert-success">{successMessage}</div>
+                )}
 
                 <div className="mb-3">
                   <label htmlFor="username" className="form-label">
@@ -135,7 +136,8 @@ const ChangePassword = () => {
                 {/* Forgot Password Link */}
                 <p
                   onClick={() => setShowForgotPassword(true)}
-                  className="text-primary cursor-pointer mt-3"
+                  style={{ cursor: "pointer" }} // Add the cursor pointer style here
+                  className="text-primary mt-3"
                 >
                   Forgot your current password?
                 </p>
@@ -146,7 +148,9 @@ const ChangePassword = () => {
       </div>
 
       {/* Show Forgot Password Modal */}
-      {showForgotPassword && <ForgotPassword closeForm={() => setShowForgotPassword(false)} />}
+      {showForgotPassword && (
+        <ForgotPassword closeForm={() => setShowForgotPassword(false)} />
+      )}
     </div>
   );
 };

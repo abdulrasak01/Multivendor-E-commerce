@@ -2,16 +2,15 @@ import React from "react";
 import logo from "../logo.svg";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import api from "../api/api";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [totalResult, setTotalResult] = useState(0)
-  const baseURL = 'http://localhost:8000/api'
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data      
+      const res = (await api.get(url)).data      
       setCategories(res.data)
       setTotalResult(res.count)
     } catch (error) {
@@ -19,11 +18,11 @@ const Categories = () => {
     }
   };
   useEffect(()=>{
-    fetchData(baseURL+'/categories/')
+    fetchData('/categories/')
   },[])
 
   const changeUrl = (url) => {
-    fetchData(baseURL + url)
+    fetchData( url)
   }
 
   var links = []

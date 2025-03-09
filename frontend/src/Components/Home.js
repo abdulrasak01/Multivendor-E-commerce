@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import logo from "../logo.svg";
 import Carousel from "react-bootstrap/Carousel";
-import AllProducts from "./AllProducts";
 import { Link } from "react-router-dom";
 import SingleProduct from "./SingleProduct";
-import axios from "axios";
+import api from "../api/api";
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [totalResult, setTotalResult] = useState(0);
-  const baseURL = "http://localhost:8000/api";
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data;
+      const res = (await api.get(url)).data;
       setProducts(res.results);
       setTotalResult(res.count);
     } catch (error) {
@@ -20,11 +18,11 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    fetchData(baseURL + "/products/");
+    fetchData("/products/");
   }, []);
 
   const changeUrl = (url) => {
-    fetchData(baseURL + url);
+    fetchData(url);
   };
 
   var links = [];
@@ -42,7 +40,6 @@ const Home = () => {
     );
   }
 
-  console.log(products);
   return (
     <main className="container mt-4">
       <div className="latest-products">

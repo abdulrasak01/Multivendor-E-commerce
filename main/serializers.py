@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,13 +23,23 @@ class VendorDetailSerializer(serializers.ModelSerializer):
         
         
 class ProductListSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()  # Use a method to get the full URL for the image
+    
     class Meta:
         model = models.Product
-        fields=['id','category','vendor','title','slug','detail','price','product_imgs']
-        
+        fields = ['id', 'category', 'vendor', 'title', 'slug', 'detail', 'price', 'usd_price', 'image', 'product_imgs'] 
+
+    def get_image(self, obj):
+        request = self.context.get('request')  # Get the request context
+        if obj.image:
+            return request.build_absolute_uri(obj.image.url)  # Full URL for the image
+        return None
+    
     def __init__(self, *args, **kwargs):
         super(ProductListSerializer, self).__init__(*args, **kwargs)
-        self.Meta.depth = 1
+        self.Meta.depth = 2
+    
+    
         
         
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -41,16 +52,16 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     product_imgs = ProductImageSerializer(many=True, read_only = True)
     class Meta:
         model = models.Product
-        fields=['id','category','vendor','title','slug','tag_list','detail','price','product_ratings','product_imgs','demo']
+        fields=['id','category','vendor','title','slug','tag_list','detail','price','usd_price','demo_url','product_file','product_ratings','product_imgs', 'downloads']
         
     def __init__(self, *args, **kwargs):
         super(ProductDetailSerializer, self).__init__(*args, **kwargs)
-        self.Meta.depth = 1
+        # self.Meta.depth = 1
         
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Customer
-        fields=['id','user','mobile']
+        fields=['id','user','mobile','profile_img']
         
     def __init__(self, *args, **kwargs):
         super(CustomerSerializer, self).__init__(*args, **kwargs)
@@ -59,13 +70,31 @@ class CustomerSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
-        fields=['id','customer']
+        fields=['id','customer','order_status']
         
         
 class OrderItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrderItems
         fields=['id','order','product','qty','price']
+        
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['order'] = OrderDetailSerializer(instance.order).data
+        response['product'] = ProductDetailSerializer(instance.product).data
+        return response
+        
+        
+class CustomerOrderItemsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OrderItems
+        fields = ['id', 'order', 'product', 'qty', 'price']
+        depth = 1 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs) 
+
+        
     
     
 class OrderDetailSerializer(serializers.ModelSerializer):
@@ -80,7 +109,12 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 class CustomerAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CustomerAddress
-        fields=['id','order','address']
+        fields = ['id', 'address', 'default_address', 'customer']
+
+    def validate_customer(self, value):
+        if not value:
+            raise serializers.ValidationError("Customer is required")
+        return value
         
     def __init__(self, *args, **kwargs):
         super(CustomerAddressSerializer, self).__init__(*args, **kwargs)
@@ -121,19 +155,28 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id','username','password','email','mobile']
         
         
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Address
-        fields = ['address','door']
+# class AddressSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Address
+#         fields = ['address','door']
         
-class StudentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Student
-        fields = ['id','name']
+# class StudentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Student
+#         fields = ['id','name']
         
-    def __init__(self, *args, **kwargs):
-        super(StudentSerializer, self).__init__(*args, **kwargs)
-        self.Meta.depth = 1
+#     def __init__(self, *args, **kwargs):
+#         super(StudentSerializer, self).__init__(*args, **kwargs)
+#         self.Meta.depth = 1
+        
+class WishListSerializer(serializers.ModelSerializer):
+    Product = ProductListSerializer()  # Nest ProductSerializer
+   # Customer = CustomerSerializer()  # Nest CustomerSerializer
+
+    class Meta:
+        model = models.WishList
+        fields = ['id', 'Product', 'Customer']
+        
         
         
         

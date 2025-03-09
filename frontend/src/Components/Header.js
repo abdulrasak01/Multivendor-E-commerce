@@ -1,16 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Dropdown from "react-bootstrap/Dropdown";
 import { UserContext } from "../Context";
 import { useContext } from "react";
-import { CartContext } from "../Context";
+import { CartContext, CurrencyContext } from "../Context";
 import Font from "react-font";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Header = () => {
   const userContext = useContext(UserContext);
   const { cartData, setCartData } = useContext(CartContext);
+  const {currencyData, setCurrencyData } = useContext(CurrencyContext);
+
+  // Handler for selecting a currency
+  const handleSelectCurrency = (currency) => {
+    localStorage.removeItem('currency')
+    localStorage.setItem('currency', currency)
+    setCurrencyData(currency);
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-danger shadow-lg px-4 py-3">
@@ -26,7 +34,7 @@ const Header = () => {
             </div>
             <div className="nav-item mt-3">
               <Font family="Roboto Bold">
-                <h3>``  Elite Market Place</h3>
+                <h3>Elite Market Place</h3>
               </Font>
             </div>
           </div>
@@ -131,6 +139,21 @@ const Header = () => {
                   {cartData?.length ? cartData.length : 0}
                 </span>
               </Link>
+            </li>
+            <li className="nav-item">
+              <Dropdown onSelect={handleSelectCurrency}>
+                <Dropdown.Toggle
+                  variant="transparent"
+                  id="dropdown-seller"
+                  className="text-white"
+                >
+                  {currencyData.toUpperCase()}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item eventKey="inr">INR</Dropdown.Item>
+                  <Dropdown.Item eventKey="usd">USD</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </li>
           </ul>
         </div>

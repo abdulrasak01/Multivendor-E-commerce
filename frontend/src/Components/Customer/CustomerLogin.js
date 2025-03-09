@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useState } from "react";
 import ForgotPassword from './ForgotPassword';  // Import the ForgotPassword component
+import api from "../../api/api";
 
 const CustomerLogin = () => {
-   const baseURL = 'http://localhost:8000/api/';
    const [formError, setFormError] = useState(false);
    const [errMsg, setErrMsg] = useState('');
    const [input, setInput] = useState({});
@@ -28,7 +28,7 @@ const CustomerLogin = () => {
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-         const res = await axios.post(baseURL + 'customer/login/', input);
+         const res = await api.post('customer/login/', input);
          if (res.data.bool === false) {
             setFormError(true);
             setErrMsg(res.data.msg);

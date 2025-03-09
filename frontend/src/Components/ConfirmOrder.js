@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { CartContext } from "../Context";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useNavigate } from "react-router-dom";  // Import useNavigate instead of useHistory
 
 const ConfirmOrder = () => {
   const userContext = useContext(UserContext);
@@ -12,8 +13,8 @@ const ConfirmOrder = () => {
   const [payMethod, setPayMethod] = useState("");
   const [totalAmountInINR, setTotalAmountInINR] = useState(0);
   const [totalAmountInUSD, setTotalAmountInUSD] = useState(0);
-
   const exchangeRate = 80;
+  const navigate = useNavigate();  // Initialize useNavigate
 
   useEffect(() => {
     if (cartData && cartData.length > 0) {
@@ -92,25 +93,23 @@ const ConfirmOrder = () => {
     setPayMethod(payMethod);
   };
 
-const updateOrderStatus = (orderStatus) =>{
-    axios.post(baseURL+'update-order-status/'+orderId).then(function(response){
-      window.location.href = '/customer/dashboard'
-    }).catch(function(error){
-      console.error(error);      
+  const updateOrderStatus = (orderStatus) => {
+    axios.post(baseURL + 'update-order-status/' + orderId).then(function (response) {
+      navigate('/customer/order-success');  // Use navigate to redirect to OrderSuccess page
+    }).catch(function (error) {
+      console.error(error);
+      navigate('/order-failure');  // Use navigate to redirect to OrderFailure page
     })
-}
+  }
 
-console.log(totalAmountInUSD);
-
-  
+  console.log(totalAmountInUSD);
 
   return (
     <div className="container">
       <div className="row mt-5 py-3">
         <div className="card py-3 items-center">
           <h3 className="text-center">
-            <i className="fa fa-check-circle text-success"></i>Your Order has
-            been confirmed{" "}
+            <i className="fa fa-check-circle text-success"></i>Your Order has been confirmed{" "}
           </h3>
           <h5 className="'text-center  mx-auto"> ORDER ID: {orderId}</h5>
           <h5 className="text-center mx-auto">
@@ -158,24 +157,33 @@ console.log(totalAmountInUSD);
           </form>
           {payMethod === "paypal" && (
             <div className='mt-3 w-full mx-5'>
-              <PayPalScriptProvider options={{"clientId":"Adegy14MEcUM1hoXd_rNquqImn6dpVRJuS9LSrUCJ8JrhpP7frE0f-udOW75JzjxecIkMetPY8of4K4D"}}>
-                <PayPalButtons createOrder={(data,actions)=>{
-                  return actions.order.create({
-                    purchase_units: [
-                      {
-                        amount: {
-                          currency_code: "USD",
-                          value: totalAmountInUSD,
+              <PayPalScriptProvider options={{ "clientId": "Adegy14MEcUM1hoXd_rNquqImn6dpVRJuS9LSrUCJ8JrhpP7frE0f-udOW75JzjxecIkMetPY8of4K4D" }}>
+                <PayPalButtons
+                  createOrder={(data, actions) => {
+                    return actions.order.create({
+                      purchase_units: [
+                        {
+                          amount: {
+                            currency_code: "USD",
+                            value: totalAmountInUSD,
+                          },
                         },
-                      },
-                    ],
-                  });
-                }} onApprove={(data,actions)=>{
-                  return actions.order.capture().then(details => {
-                    const name = details.payer.name.given_name;
-                    alert(`Transaction completed by ${name}`)
-                  })
-                }}/>
+                      ],
+                    });
+                  }}
+                  onApprove={(data, actions) => {
+                    return actions.order.capture().then(details => {
+                      const name = details.payer.name.given_name;
+                      alert(`Transaction completed by ${name}`);
+                      updateOrderStatus("completed");  // Update order status after successful payment
+                    });
+                  }}
+                  onError={(error) => {
+                    console.error(error);
+                    // updateOrderStatus("failed");  // Update order status on payment failure
+                    // navigate('/order-failure');  // Navigate to OrderFailure component on error
+                  }}
+                />
               </PayPalScriptProvider>
             </div>
           )}

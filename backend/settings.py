@@ -38,7 +38,7 @@ REST_FRAMEWORK = {
     #     'rest_framework.permissions.IsAuthenticated'
     # ],
     'DEFAULT_PAGINATION_CLASS': 'main.pagination.CustomPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 50
 }
 
 PASSWORD_HASHERS = [
@@ -132,23 +132,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'multivendor_ecommerce',
-#         'USER':'postgres',
-#         'PASSWORD':'password',
-#         'HOST':'localhost'
-#     }
-# }
-
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('postgresql://${{postgres}}:${{UCnYqVyPiuKZyspxrCnRnpCxkfsvqAXI}}@${{postgres.railway.internal}}:5432/${{railway}}'))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'multivendor_ecommerce',
+        'USER':'postgres',
+        'PASSWORD':'password',
+        'HOST':'localhost'
+    }
 }
 
-ALLOWED_HOSTS = ["*"]
+# import dj_database_url
+
+# DATABASES = {
+#     'default': dj_database_url.config(default=os.getenv('postgresql://${{postgres}}:${{UCnYqVyPiuKZyspxrCnRnpCxkfsvqAXI}}@${{postgres.railway.internal}}:5432/${{railway}}'))
+# }
+
+# ALLOWED_HOSTS = ["*"]
 
 
 # Password validation

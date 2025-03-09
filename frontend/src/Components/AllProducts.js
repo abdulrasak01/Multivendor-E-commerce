@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import SingleProduct from "./SingleProduct";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import api from "../api/api";
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
   const [totalResult, setTotalResult] = useState(0)
-  const baseURL = 'http://localhost:8000/api'
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data      
+      const res = (await api.get(url)).data      
       setProducts(res.results)
       setTotalResult(res.count)
     } catch (error) {
@@ -17,19 +17,22 @@ const AllProducts = () => {
     }
   };
   useEffect(()=>{
-    fetchData(baseURL+'/products/')
+    fetchData('/products/')
   },[])
 
   const changeUrl = (url) => {
-    fetchData(baseURL + url)
+    fetchData(url)
   }
+
+  console.log(products);
+  
 
   var links = []
   for(let i=1; i<=totalResult; i++) {
     links.push(<li className="page-item"><Link onClick={()=>changeUrl(`/products/?page=${i}`)} className="page-link" to={`/products/?page=${i}`}>{i}</Link></li>)
   }
 
-  console.log(products);
+ 
 
   return (
     <>

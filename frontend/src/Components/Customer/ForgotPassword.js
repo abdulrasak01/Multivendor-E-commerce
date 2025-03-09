@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import api from '../../api/api';
 
 const ForgotPassword = ({ closeForm }) => {
    const [email, setEmail] = useState('');
@@ -14,7 +15,7 @@ const ForgotPassword = ({ closeForm }) => {
    const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-         const response = await axios.post('http://localhost:8000/api/customer/forgot-password/', { email });
+         const response = await api.post('/customer/forgot-password/', { email });
          if (response.data.bool) {
             setSuccess(response.data.msg);
             setEmail('');

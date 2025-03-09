@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../../api/api";
 
 const Register = () => {
-  const baseURL = 'http://localhost:8000/api/'
   const [input,setInput] = useState()
   const [successMsg,setSuccessMsg] = useState('')
   const [formError,setFormError] = useState(false)
@@ -20,7 +20,7 @@ const Register = () => {
   
   const handleSubmit = async (e) => {
     try {
-      const res = await axios.post(baseURL+'customer/register/',input)
+      const res = await api.post('customer/register/',input)
       if(res.data.bool === false){
         setFormError(true)
         setErrMsg(res.data.msg)

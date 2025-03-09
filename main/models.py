@@ -26,8 +26,11 @@ class Product(models.Model):
     detail = models.TextField(null=True)
     price = models.DecimalField(max_digits=10,decimal_places=2)
     tags=models.TextField(null=True)
-    image = models.ImageField(upload_to='product_img]s/', null=True, blank=True)
-    demo = models.URLField(blank=True, null=True)
+    image = models.ImageField(upload_to='product_imgs/', null=True, blank=True)
+    demo_url = models.URLField(blank=True, null=True)
+    product_file = models.FileField(upload_to='product_files/',null=True, blank=True)
+    downloads = models.IntegerField(default=0,null=True)
+    usd_price = models.DecimalField(max_digits=10, decimal_places=2,default=80)
     def __str__(self):
         return self.title
     
@@ -37,16 +40,23 @@ class Product(models.Model):
             return(tagList)
         return
     
+    # def calculated_usd_price(self):
+    #     if self.price and self.usd_price:
+    #         return self.price / self.usd_price
+    #     return 0
+    
+    
 #customer model
 class Customer(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     mobile = models.PositiveBigIntegerField(null=True)
+    profile_img = models.ImageField(upload_to='customer_imgs/', null=True)
     
     def __str__(self):
         return self.user.username
     
 #order model
-class  Order(models.Model):
+class Order(models.Model):
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='order_items')
     order_time = models.DateTimeField(auto_now_add=True)
     order_status = models.BooleanField(default=False)
@@ -67,7 +77,7 @@ class OrderItems(models.Model):
 
 # customer address model
 class  CustomerAddress(models.Model):
-    order = models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='customer_addresses')
+    customer = models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='customer_addresses')
     address=models.TextField()
     default_address = models.BooleanField(default=False)
     
@@ -97,16 +107,24 @@ class CustomUser(models.Model):
     
     
     
-class Student(models.Model):
-    name = models.CharField(max_length=20, null= True)
+# class Student(models.Model):
+#     name = models.CharField(max_length=20, null= True)
     
-    def __str__(self):
-        return self.name
-class Address(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
-    door = models.IntegerField(null= True)
-    address = models.CharField(max_length=100, null=True)
+#     def __str__(self):
+#         return self.name
+# class Address(models.Model):
+#     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
+#     door = models.IntegerField(null= True)
+#     address = models.CharField(max_length=100, null=True)
     
     def __str__(self):
         return self.door
+    
+    
+class WishList(models.Model):
+    Product = models.ForeignKey(Product,on_delete=models.CASCADE)
+    Customer=models.ForeignKey(Customer,on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f'{self.Product.title} - {self.Customer.user.first_name}'
     

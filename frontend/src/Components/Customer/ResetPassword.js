@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import api from '../../api/api';
 
 const ResetPassword = () => {
   const { uid, token } = useParams(); // Get the uid and token from the URL
@@ -9,7 +10,6 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
-  const baseURL = 'http://localhost:8000/api'
 
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
@@ -28,7 +28,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await fetch(`${baseURL}/reset-password/${uid}/${token}/`, {
+      const response = await api.fetch(`/reset-password/${uid}/${token}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

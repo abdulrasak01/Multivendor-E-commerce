@@ -35,17 +35,21 @@ import Customers from "./Components/Seller/Customers";
 import Reports from "./Components/Seller/Reports";
 import VendorProfile from "./Components/Seller/VendorProfile";
 import VendorChangePassword from "./Components/Seller/VendorChangePassword";
-import { CartContext } from "./Context";
+import { CartContext, CurrencyContext } from "./Context";
 import { useState } from "react";
 import ConfirmOrder from "./Components/ConfirmOrder";
 import ResetPassword from "./Components/Customer/ResetPassword";
 
 const checkCart = localStorage.getItem("cartData");
+const currentCurrency = localStorage.getItem("currency") || 'inr';
+
 function App() {
   const [cartData, setCartData] = useState(JSON.parse(checkCart));
+  const [currencyData, setCurrencyData] = useState(currentCurrency);
 
   return (
     <div className="">
+      <CurrencyContext.Provider value={{currencyData, setCurrencyData}} >
       <CartContext.Provider value={{ cartData, setCartData }}>
         <Header />
         <Routes>
@@ -97,6 +101,7 @@ function App() {
         </Routes>
         <Footer />
       </CartContext.Provider>
+      </CurrencyContext.Provider>
     </div>
   );
 }

@@ -3,18 +3,18 @@ import SingleProduct from "./SingleProduct";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import api from "../api/api";
 
 const CategoryProducts = () => {
   const [products, setProducts] = useState([]);
   const [totalResult, setTotalResult] = useState(0)
-  const baseURL = 'http://localhost:8000/api'
 
   const { category_slug, category_id } = useParams();
   
 
   const fetchData = async (url) => {
     try {
-      const res = (await axios.get(url)).data      
+      const res = (await api.get(url)).data      
       setProducts(res.results)
       setTotalResult(res.count)
     } catch (error) {
@@ -22,20 +22,18 @@ const CategoryProducts = () => {
     }
   };
   useEffect(()=>{
-    fetchData(baseURL+`/products/?category=${category_id}`)
+    fetchData(`/products/?category=${category_id}`)
   },[])
 
   const changeUrl = (url) => {
     fetchData(url)
   }
 
-  console.log(products);
-  
   
 
   var links = []
   for(let i=1; i<=totalResult; i++) {
-    links.push(<li className="page-item"><Link onClick={()=>changeUrl(baseURL+`/products/?category=${category_id}&page=${i}`)} className="page-link" to={`/category/${category_slug}/${category_id}?page=${i}`}>{i}</Link></li>)
+    links.push(<li className="page-item"><Link onClick={()=>changeUrl(`/products/?category=${category_id}&page=${i}`)} className="page-link" to={`/category/${category_slug}/${category_id}?page=${i}`}>{i}</Link></li>)
   }
     
 
