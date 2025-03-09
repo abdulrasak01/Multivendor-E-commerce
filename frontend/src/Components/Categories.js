@@ -40,11 +40,11 @@ const Categories = () => {
           {categories.map((category, index) => (
           <div className="col-12 col-md-3 mb-4">
             <div className="card">
-              <img src={logo} className="card-img-top" alt="..." />
+              <img src={category?.image} className="card-img-top" alt="..." />
               <div className="card-body">
                 <h4 className="card-title" key={category.id}><Link to={`/category/${category.title}/${category.id}`}>{category.title}</Link></h4>
               </div>
-              <div className="card-footer">Product downloads: 123</div>
+              <div className="card-footer">Detail: {category?.detail}</div>
             </div>
           </div>))}
           {/* productbox end */}

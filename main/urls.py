@@ -39,5 +39,7 @@ urlpatterns = [
     path('addresses/<int:customer_id>/', views.customer_address_list, name='customer_address_list'),
     path('address/<int:customer_id>/create/', views.create_customer_address, name='create_customer_address'),
     path('addresses/<int:address_id>/update/', views.set_default_address, name='set_default_address'),
+    path('popular-products/', views.popular_products, name='popular_products'),
+     path('order-status-count/<int:customer_id>/', views.OrderStatusCount.as_view(), name='order-status-count'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

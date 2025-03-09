@@ -133,7 +133,7 @@ class ProductRatingSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.productCategory
-        fields=['id','title','detail']
+        fields=['id','title','detail','image']
         
     def __init__(self, *args, **kwargs):
         super(CategorySerializer, self).__init__(*args, **kwargs)
@@ -142,7 +142,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class CategoryDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.productCategory
-        fields=['id','title','detail']
+        fields=['id','title','detail','image']
         
     def __init__(self, *args, **kwargs):
         super(CategoryDetailSerializer, self).__init__(*args, **kwargs)
@@ -176,6 +176,29 @@ class WishListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WishList
         fields = ['id', 'Product', 'Customer']
+        
+class PopularProductSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Product
+        fields = ['id', 'title', 'slug', 'detail', 'price', 'tags', 'image', 'demo_url', 'downloads', 'usd_price']
+        
+    # def get_image(self, obj):
+    #     request = self.context.get('request')  # Get the request context
+    #     print(f"REQUEST: {request}")
+    #     if obj.image:
+    #         print(f"Image URL: {obj.image.url}")  # Log the URL
+    #         if request:
+    #             return request.build_absolute_uri(obj.image.url)  # Full URL for the image
+    #     return None
+    
+    def get_image(self, obj):
+        request = self.context.get('request')  # Get the request context from the serializer context
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)  # Build absolute URL if request is available
+        return None
+
         
         
         

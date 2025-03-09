@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate
 import json
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 
 from . import models
 from . import serializers
@@ -108,6 +109,17 @@ class CustomerOrderItemsList(generics.ListCreateAPIView):
     def get_queryset(self):
         customer_id = self.kwargs['pk']
         return models.OrderItems.objects.filter(order__customer__id=customer_id)
+    
+class OrderStatusCount(APIView):
+    def get(self, request, customer_id):
+        # Filter orders by customer_id and order_status == True
+        orders = models.Order.objects.filter(customer_id=customer_id, order_status=True)
+        
+        # Get the count of orders
+        order_count = orders.count()
+
+        # Return the count in the response
+        return Response({"order_count": order_count}, status=status.HTTP_200_OK)
 
 
 
@@ -576,6 +588,14 @@ def remove_from_wishlist(request):
             return JsonResponse({'bool': False, 'msg': str(e)})
 
     return JsonResponse({'bool': False, 'msg': 'Only POST method is allowed'})
+
+
+@api_view(['GET'])
+def popular_products(request):
+    # Query the popular products, assuming you are ordering by `downloads` for example
+    products = models.Product.objects.all().order_by('-downloads')[:5]  # Example of popular products
+    serializer = serializers.PopularProductSerializer(products, many=True, context={'request': request})
+    return Response(serializer.data)
 
 
 
